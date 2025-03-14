@@ -28,7 +28,9 @@
 #include <Wire.h>
 #include "HT_SSD1306Wire.h"
 
+#define LASER_CONTROL_PIN 46
 
+static bool laser_state = false;
 
 /**********************************************  WIFI Client *********************************
 
@@ -222,7 +224,7 @@ void setupWIFI()
  */
 void setup()
 {
-  pinMode(13, OUTPUT);
+  pinMode(LASER_CONTROL_PIN, OUTPUT);
   display.init();
   display.clear();
   display.display();
@@ -252,7 +254,15 @@ void loop()
   if(ms % 1000 == 0)
   {
     Serial.println("helloï¼ŒOTA now");
+
+    laser_state = !laser_state;
+    if (laser_state) {
+      digitalWrite(LASER_CONTROL_PIN, HIGH); // turn the laser on
+    } else {
+      digitalWrite(LASER_CONTROL_PIN, LOW); // turn the laser off
+    }
   }
+  
 }
 
 /****************************************************
