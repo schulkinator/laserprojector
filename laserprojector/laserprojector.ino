@@ -27,7 +27,8 @@
 #include <WiFi.h>
 #include <Wire.h>
 #include "HT_SSD1306Wire.h"
-#include <LiquidCrystal.h>
+#include "LiquidCrystal.h"
+#include <Ch376msc.h>
 
 #define LASER_CONTROL_PIN 46
 
@@ -78,9 +79,24 @@ static bool laser_state = false;
 
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
-const int rs = 45, en = 42, d4 = 6, d5 = 5, d6 = 4, d7 = 3;
+const int LCD_RS=45, LCD_EN=42, LCD_D4=6, LCD_D5=5, LCD_D6=4, LCD_D7=3;
+const int rs = LCD_RS, en = LCD_EN, d4 = LCD_D4, d5 = LCD_D5, d6 = LCD_D6, d7 = LCD_D7;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+const int TXS0108E_bus_enable = 1;
+/*************************** USB Disk Module CH375 ******************************************/
+#define CH375_SPI_CS 36
+#define CH375_SPI_MOSI 34
+#define CH375_SPI_MISO 19
+#define CH375_SPI_SCLK 7 //5
+#define CH375_INT 48
 
+// use this if no other device are attached to SPI port(MISO pin used as interrupt)
+//Ch376msc flashDrive(CH375_SPI_CS); // chipSelect
+
+//If the SPI port shared with other devices e.g SD card, display, etc. remove from comment the code below and put the code above in a comment
+Ch376msc flashDrive(CH375_SPI_CS, CH375_INT); // chipSelect, interrupt pin
+ // buffer for reading
+char adatBuffer[255];// max length 255 = 254 char + 1 NULL character
 
 /**********************************************  WIFI Client *********************************
 
@@ -270,18 +286,53 @@ void setupWIFI()
 }
 
 void setup_lcd() {
+  pinMode(TXS0108E_bus_enable, OUTPUT);
+  // toggle the OE line to get the TXS0108E to start allowing output
+  digitalWrite(TXS0108E_bus_enable, LOW);
+  delay(50);
+  digitalWrite(TXS0108E_bus_enable, HIGH);
   // set up the LCD's number of columns and rows:
   lcd.begin(20, 2);
   // Print a message to the LCD.
-  lcd.print("hello, world!");
+  lcd.print("Initializing...");
 }
 
 void loop_lcd() {
   // set the cursor to column 0, line 1
   // (note: line 1 is the second row, since counting begins with 0):
-  lcd.setCursor(0, 1);
+  //lcd.setCursor(0, 1);
   // print the number of seconds since reset:
-  lcd.print(millis() / 1000);
+  //lcd.print(millis());
+}
+
+void setup_flashDrive() {
+  flashDrive.init();
+}
+
+void loop_flashDrive() {
+  unsigned long ms = millis();
+  if(ms % 1000 == 0) {    
+    if (flashDrive.driveReady()) {
+      Serial.println(F("Flash drive ready!"));      
+      lcd.setCursor(0, 0);
+      lcd.print("Flash drive ready");
+    } else {
+      Serial.println(F("Flash drive not ready"));
+      lcd.setCursor(0, 0);
+      lcd.print("Flash drive not rdy ");
+    }
+    if(flashDrive.checkIntMessage()){
+      if(flashDrive.getDeviceStatus()){
+        Serial.println(F("Flash drive attached!"));
+        lcd.setCursor(0, 0);
+        lcd.print("Flash drive attached");
+      } else {
+        Serial.println(F("No Flash drive attached"));
+        lcd.setCursor(0, 0);
+        lcd.print("No Flash drive attch");
+      }
+    }
+  }
 }
 
 /******************************************************
@@ -305,6 +356,7 @@ void setup()
   }
 
   Serial.println("Initialize...");
+  setup_flashDrive();
 
   setupWIFI();
   setupOTA();
@@ -329,6 +381,7 @@ void loop()
       digitalWrite(LASER_CONTROL_PIN, LOW); // turn the laser off
     }
   }
+  loop_flashDrive();
   loop_lcd();
 }
 
