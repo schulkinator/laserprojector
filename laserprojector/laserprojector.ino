@@ -29,6 +29,7 @@
 #include "HT_SSD1306Wire.h"
 #include "LiquidCrystal.h"
 #include <Ch376msc.h>
+#include <SoftwareSerial.h>
 
 #define LASER_CONTROL_PIN 46
 
@@ -83,18 +84,22 @@ const int LCD_RS=45, LCD_EN=42, LCD_D4=6, LCD_D5=5, LCD_D6=4, LCD_D7=3;
 const int rs = LCD_RS, en = LCD_EN, d4 = LCD_D4, d5 = LCD_D5, d6 = LCD_D6, d7 = LCD_D7;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 const int TXS0108E_bus_enable = 1;
-/*************************** USB Disk Module CH375 ******************************************/
+/*************************** USB Disk Module CH376 ******************************************/
 #define CH375_SPI_CS 36
 #define CH375_SPI_MOSI 34
 #define CH375_SPI_MISO 19
 #define CH375_SPI_SCLK 7 //5
 #define CH375_INT 48
+#define CH376_RX 44
+#define CH376_TX 43
 
 // use this if no other device are attached to SPI port(MISO pin used as interrupt)
 //Ch376msc flashDrive(CH375_SPI_CS); // chipSelect
 
 //If the SPI port shared with other devices e.g SD card, display, etc. remove from comment the code below and put the code above in a comment
-Ch376msc flashDrive(CH375_SPI_CS, CH375_INT); // chipSelect, interrupt pin
+//Ch376msc flashDrive(CH375_SPI_CS, CH375_INT); // chipSelect, interrupt pin
+SoftwareSerial mySerial(48, 47); // RX, TX pins
+Ch376msc flashDrive(mySerial);
  // buffer for reading
 char adatBuffer[255];// max length 255 = 254 char + 1 NULL character
 
@@ -306,33 +311,24 @@ void loop_lcd() {
 }
 
 void setup_flashDrive() {
+  mySerial.begin(9600);// Important! First initialize soft serial object and after Ch376
   flashDrive.init();
 }
 
 void loop_flashDrive() {
-  unsigned long ms = millis();
-  if(ms % 1000 == 0) {    
-    if (flashDrive.driveReady()) {
-      Serial.println(F("Flash drive ready!"));      
+  if(flashDrive.checkIntMessage()){
+		if(flashDrive.getDeviceStatus()){
+			Serial.println(F("Flash drive attached!"));
       lcd.setCursor(0, 0);
-      lcd.print("Flash drive ready");
-    } else {
-      Serial.println(F("Flash drive not ready"));
+      lcd.print("Flash drive attached");
+		} else {
+			Serial.println(F("Flash drive detached!"));
       lcd.setCursor(0, 0);
       lcd.print("Flash drive not rdy ");
-    }
-    if(flashDrive.checkIntMessage()){
-      if(flashDrive.getDeviceStatus()){
-        Serial.println(F("Flash drive attached!"));
-        lcd.setCursor(0, 0);
-        lcd.print("Flash drive attached");
-      } else {
-        Serial.println(F("No Flash drive attached"));
-        lcd.setCursor(0, 0);
-        lcd.print("No Flash drive attch");
-      }
-    }
-  }
+		}
+	}
+  unsigned long ms = millis();
+  
 }
 
 /******************************************************
