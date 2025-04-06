@@ -26,14 +26,24 @@
 #include <ArduinoOTA.h>
 #include <WiFi.h>
 #include <Wire.h>
+#include "LaserShow/Laser.h"
+#include "LaserShow/Drawing.h"
 #include "HT_SSD1306Wire.h"
 #include "LiquidCrystal.h"
 #include <Ch376msc.h>
 #include <SoftwareSerial.h>
 
+
 #define LASER_CONTROL_PIN 46
 
 static bool laser_state = false;
+
+#define DAC_CS_PIN 34
+#define DAC_CLK_PIN 36
+#define DAC_SDI_MOSI_PIN 35
+#define DAC_LATCH_PIN 39
+
+
 /*
   LiquidCrystal Library - Hello World
 
@@ -85,13 +95,14 @@ const int rs = LCD_RS, en = LCD_EN, d4 = LCD_D4, d5 = LCD_D5, d6 = LCD_D6, d7 = 
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 const int TXS0108E_bus_enable = 1;
 /*************************** USB Disk Module CH376 ******************************************/
-#define CH375_SPI_CS 36
-#define CH375_SPI_MOSI 34
-#define CH375_SPI_MISO 19
-#define CH375_SPI_SCLK 7 //5
-#define CH375_INT 48
-#define CH376_RX 44
-#define CH376_TX 43
+// #define CH375_SPI_CS 36
+// #define CH375_SPI_MOSI 34
+// #define CH375_SPI_MISO 19
+// #define CH375_SPI_SCLK 7 //5
+// #define CH375_INT 48
+// #define CH376_RX 44
+// #define CH376_TX 43
+
 
 // use this if no other device are attached to SPI port(MISO pin used as interrupt)
 //Ch376msc flashDrive(CH375_SPI_CS); // chipSelect
@@ -137,6 +148,9 @@ const char* password = "xxx"; //replace "xxxxxx" with your WIFI's password
 //SSD1306 display(0x3C, 4, 15);           //Pins 4 and 5 are bound to the motherboard of Kit 32 and cannot be used for other purposes
 static SSD1306Wire  display(0x3c, 500000, SDA_OLED, SCL_OLED, GEOMETRY_128_64, RST_OLED); // addr , freq , i2c group , resolution , rst
 
+
+// Create laser instance (with laser pointer connected to digital pin LASER_CONTROL_PIN)
+Laser laser(LASER_CONTROL_PIN);
 
 /********************************************************************
  * OTA upgrade configuration
@@ -290,6 +304,10 @@ void setupWIFI()
   
 }
 
+void setup_laser() {
+  laser.init(DAC_CS_PIN, DAC_LATCH_PIN, DAC_SDI_MOSI_PIN, DAC_CLK_PIN);
+}
+
 void setup_lcd() {
   pinMode(TXS0108E_bus_enable, OUTPUT);
   // toggle the OE line to get the TXS0108E to start allowing output
@@ -331,12 +349,15 @@ void loop_flashDrive() {
   
 }
 
+
+
 /******************************************************
  * arduino setup
  */
 void setup()
 {
   pinMode(LASER_CONTROL_PIN, OUTPUT);
+  setup_laser();
   setup_lcd();
   display.init();
   display.clear();
