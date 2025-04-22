@@ -26,8 +26,8 @@
 #include <ArduinoOTA.h>
 #include <WiFi.h>
 #include <Wire.h>
-#include "LaserShow/Laser.h"
-#include "LaserShow/Drawing.h"
+#include "Laser.h"
+#include "Drawing.h"
 #include "HT_SSD1306Wire.h"
 #include "LiquidCrystal.h"
 #include <Ch376msc.h>
