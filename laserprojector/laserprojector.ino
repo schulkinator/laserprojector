@@ -26,8 +26,13 @@
 #include <ArduinoOTA.h>
 #include <WiFi.h>
 #include <Wire.h>
+// -- laser drawing --
 #include "Laser.h"
 #include "Drawing.h"
+#include "Cube.h"
+#include "Objects.h"
+#include "Logo.h"
+// ----------------------
 #include "HT_SSD1306Wire.h"
 #include "LiquidCrystal.h"
 #include <Ch376msc.h>
@@ -40,7 +45,7 @@ static bool laser_state = false;
 
 #define DAC_CS_PIN 34
 #define DAC_CLK_PIN 36
-#define DAC_SDI_MOSI_PIN 35
+#define DAC_SDI_MOSI_PIN 33
 #define DAC_LATCH_PIN 39
 
 
@@ -349,7 +354,28 @@ void loop_flashDrive() {
   
 }
 
+void whatAbout3D()
+{
+  int w1 = Drawing::stringAdvance("WHAT");
+  int w2 = Drawing::stringAdvance("ABOUT");
+  int w3 = Drawing::stringAdvance("3D");
+  long centerX, centerY, w,h;
+  Drawing::calcObjectBox(draw_question, sizeof(draw_question)/4, centerX, centerY, w, h);
 
+  laser.setOffset(2048,2048);
+  laser.setScale(0.5);
+  for (int i = 0; i<50;i++) Drawing::drawString("WHAT",-w1/2, SIN((i*10) % 360)/100., 1);
+  laser.setScale(0.5);
+  for (int i = 0; i<50;i++) Drawing::drawString("ABOUT", -w2/2 + SIN((i*10) % 360)/100., 0, 1);
+  laser.setScale(1.);
+  for (int i = 0; i<120;i++) Drawing::drawString("3D", -w3/2 + SIN((i*4) % 360)/100., COS((i*4) % 360)/100., 1);
+  float scale = 0;
+  for (int i = 0;i<200;i++) {
+    laser.setScale(scale);
+    Drawing::drawObject(draw_question, sizeof(draw_question)/4, -centerX, -centerY);
+    scale += 0.02;
+  }
+}
 
 /******************************************************
  * arduino setup
@@ -389,17 +415,18 @@ void loop()
   unsigned long ms = millis();
   if(ms % 1000 == 0)
   {
-    Serial.println("helloï¼ŒOTA now");
+    //Serial.println("helloï¼ŒOTA now");
 
     laser_state = !laser_state;
     if (laser_state) {
-      digitalWrite(LASER_CONTROL_PIN, HIGH); // turn the laser on
+      //digitalWrite(LASER_CONTROL_PIN, HIGH); // turn the laser on
     } else {
-      digitalWrite(LASER_CONTROL_PIN, LOW); // turn the laser off
+      //digitalWrite(LASER_CONTROL_PIN, LOW); // turn the laser off
     }
   }
   loop_flashDrive();
   loop_lcd();
+  whatAbout3D();
 }
 
 /****************************************************
@@ -494,4 +521,5 @@ switch (event) {
             Serial.println("Obtained IP address");
             break;
         default: break;
-    }}
+    }
+  }
