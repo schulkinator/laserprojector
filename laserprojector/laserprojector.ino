@@ -44,7 +44,9 @@
 static bool laser_state = false;
 
 #define DAC_CS_PIN 34
-#define DAC_CLK_PIN 36
+//#define DAC_CLK_PIN 35 // this made the LED come on
+#define DAC_CLK_PIN 36 // trying to fix rebooting
+//#define DAC_CLK_PIN 38
 #define DAC_SDI_MOSI_PIN 33
 #define DAC_LATCH_PIN 39
 
@@ -354,6 +356,80 @@ void loop_flashDrive() {
   
 }
 
+void simpleText()
+{
+  String str  = "HELLO WORLD";
+  Drawing::drawString(str, 0,0,str.length());
+}
+
+void letterEffect()
+{  
+  String dyn = "AZAZAYBY";
+  String lu  = "DELTAFLO";
+  int w = Drawing::stringAdvance(lu);
+  laser.setScale(3048./w);
+  laser.setOffset(2048,2048);
+  for (int i = 0;i<35;i++) {
+    Drawing::drawString(dyn, -w/2,0,4);
+    for (int i = 0;i<8;i++){ 
+      if (lu[i]>dyn[i]) dyn[i]++;
+      if (lu[i]<dyn[i]) dyn[i]--;
+    }
+  }
+  int clip = 0;
+  for (int i = 0;i<60;i++) {
+    laser.setClipArea(clip, 0, 4095-clip, 4095);
+    Drawing::drawString(lu, -w/2,0,1);
+    clip += 2048 / 50;
+  }
+  laser.resetClipArea();
+}
+
+// draw a circle using sin/cos
+void circle() {
+  const int scale = 12;
+  laser.sendto(SIN(0)/scale, COS(0)/scale);
+  laser.on();
+  for (int r = 5;r<=360;r+=5)
+  {    
+    laser.sendto(SIN(r)/scale, COS(r)/scale);
+  }
+  laser.off();
+}
+
+// Draw circle and count down from 9 to 1
+void countDown() {
+  laser.setScale(1);
+  laser.setOffset(2048,2048);
+  int center = Drawing::advance('9');
+  for (char j = '9';j>'0';j--) {
+    float scale = 0.0;
+    float step = 0.01;
+    for (int i = 0;i<40;i++) {
+      laser.setScale(1);
+      circle();
+      laser.setScale(scale);
+      Drawing::drawLetter(j, -center/3, -center*2/3 + 100);   
+      scale += step;
+      step += 0.002;
+    }
+  }
+}
+
+void drawArduino3D()
+{
+  laser.setScale(1.);
+  laser.setOffset(0,0);
+  long centerX, centerY, w,h;
+  Drawing::calcObjectBox(draw_arduino, sizeof(draw_arduino)/4, centerX, centerY, w, h);
+  int count = 360/4;
+  int angle = 0;
+  for (int i = 0;i<count;i++) {
+    Drawing::drawObjectRotated3D(draw_arduino, sizeof(draw_arduino)/4, centerX, centerY, angle % 360, 0, 1000);
+    angle += 8;
+  }
+}
+
 void whatAbout3D()
 {
   int w1 = Drawing::stringAdvance("WHAT");
@@ -426,7 +502,12 @@ void loop()
   }
   loop_flashDrive();
   loop_lcd();
-  whatAbout3D();
+  //whatAbout3D();
+  //countDown();
+  //letterEffect();
+  //simpleText();
+  //circle();
+  drawArduino3D();
 }
 
 /****************************************************
