@@ -6,6 +6,24 @@
 
 #include <SPI.h>
 #include "DAC_MCP4X.h"
+#if defined(ESP32) || defined(ARDUINO_ARCH_ESP32)
+  // ESP32-specific code 
+	#include "soc/gpio_struct.h"    // defines the GPIO struct
+	#include "soc/gpio_reg.h"       // defines the address offsets
+
+	#define SET_FAST_PINMODE_OUT(pin) \
+		GPIO.enable_w1ts = (1UL << (pin))
+	
+	#define SET_FAST_DIGITALWRITE_HIGH(pin) \
+		GPIO.out_w1ts = (1UL << (pin))
+
+	#define SET_FAST_DIGITALWRITE_LOW(pin) \
+		GPIO.out_w1tc = (1UL << (pin))
+
+#else
+  // fallback for other MCUs
+#endif
+
 
 
 byte MCP4X::init(byte model, unsigned int vrefA, unsigned int vrefB,
@@ -33,11 +51,15 @@ byte MCP4X::init(byte model, unsigned int vrefA, unsigned int vrefB,
 
 void MCP4X::begin(boolean beginSPI, int8_t sck, int8_t miso, int8_t mosi, int8_t ss) {
 
-	pinMode(ss_pin, OUTPUT); // Ensure that SS is set to SPI master mode
-	pinMode(LDAC_pin, OUTPUT);
+	//pinMode(ss_pin, OUTPUT); // Ensure that SS is set to SPI master mode
+	SET_FAST_PINMODE_OUT(ss_pin);
+	//pinMode(LDAC_pin, OUTPUT);
+	SET_FAST_PINMODE_OUT(LDAC_pin);
 
-	digitalWrite(ss_pin, HIGH); // Unselect the device
-	digitalWrite(LDAC_pin, HIGH); // Un-latch the output
+	//digitalWrite(ss_pin, HIGH); // Unselect the device
+	SET_FAST_DIGITALWRITE_HIGH(ss_pin);
+	//digitalWrite(LDAC_pin, HIGH); // Un-latch the output
+	SET_FAST_DIGITALWRITE_HIGH(LDAC_pin);
 
 	if (beginSPI)
 		SPI.begin(sck, miso, mosi, ss);
@@ -121,7 +143,7 @@ float MCP4X::getVoltageMV(byte chan) {
 }
 
 // Called by the output* set of functions.
-void MCP4X::output2(unsigned short data_A, unsigned short data_B) {
+void MCP4X::output2(unsigned short data_A, unsigned short data_B) {	
 	this->output(MCP4X_CHAN_A, data_A);
 	this->output(MCP4X_CHAN_B, data_B);
 
@@ -138,7 +160,7 @@ void MCP4X::output2(unsigned short data_A, unsigned short data_B) {
 
 void MCP4X::output(byte chan, unsigned short data) {
 //	unsigned int out;
-
+	
 	const unsigned short maxval = (1 << bitwidth) - 1;
 
 	chan &= 0x1;
@@ -175,9 +197,10 @@ void MCP4X::output(byte chan, unsigned short data) {
 
 void MCP4X::write(unsigned int data) {
 	// Drive chip select low
-	//if (MCP4X_PORT_WRITE)
+	if (MCP4X_PORT_WRITE)
 	//	PORTB &= 0xfb; // Clear PORTB pin 2 = arduino pin 10
-	//else
+		SET_FAST_DIGITALWRITE_LOW(ss_pin);
+	else
 		digitalWrite(ss_pin, LOW);
 
 	// Send the command and data bits
@@ -185,9 +208,10 @@ void MCP4X::write(unsigned int data) {
 	SPI.transfer(data & 0xff);
 
 	// Return chip select to high
-	//if (MCP4X_PORT_WRITE)
+	if (MCP4X_PORT_WRITE)
 	//	PORTB |= (1 << 2); // set PORTB pin 2 = arduino pin 10
-	//else
+		SET_FAST_DIGITALWRITE_HIGH(ss_pin);
+	else
 		digitalWrite(ss_pin, HIGH);
 }
 
@@ -211,17 +235,19 @@ void MCP4X::latch(void) {
 
 	// We then need to hold LDAC low for at least 100 ns, i.e ~2 clock cycles.
 
-	//if (MCP4X_PORT_WRITE) {
+	if (MCP4X_PORT_WRITE) {
 		// This gives ~180 ns (three clock cycles, most of which is spent low) of
 		// low time on a Uno R3 (16 MHz), measured on a scope to make sure
 	//	PORTD &= ~(1 << 7); // Uno: digital pin 7; Mega: digital pin 38
-	//	asm volatile("nop");
+		SET_FAST_DIGITALWRITE_LOW(LDAC_pin);
+		asm volatile("nop");
 	//	PORTD |= (1 << 7);
-	//} else {
+		SET_FAST_DIGITALWRITE_HIGH(LDAC_pin);
+	} else {
 		// This takes far, FAR longer than the above despite no NOP; digitalWrite
 		// is SLOW! For comparison: the above takes 180 ns, this takes... 3.8 us,
 		// or 3800 ns, 21 times as long - WITHOUT having a delay in there!
 		digitalWrite(LDAC_pin, LOW);
 		digitalWrite(LDAC_pin, HIGH);
-	//}
+	}
 }

@@ -48,7 +48,7 @@ void Laser::init(int dac_cs_pin, int dac_latch_pin, int dac_mosi_pin, int dac_cl
 }
 
 void Laser::sendToDAC(int x, int y)
-{
+{  
   #ifdef LASER_SWAP_XY
   int x1 = y;
   int y1 = x;
@@ -160,7 +160,7 @@ bool Laser::clipLine(long& x0, long& y0, long& x1, long& y1)
 }
 
 void Laser::sendto (long xpos, long ypos)
-{
+{  
   if (_enable3D) {
     Vector3i p1;
     Vector3i p;
@@ -170,7 +170,7 @@ void Laser::sendto (long xpos, long ypos)
     Matrix3::applyMatrix(_matrix, p1, p);
     xpos = ((_zDist*(long)p.x) / (_zDist + (long)p.z)) + 2048;
     ypos = ((_zDist*(long)p.y) / (_zDist + (long)p.z)) + 2048;
-  }
+  }  
   // Float was too slow on Arduino, so I used
   // fixed point precision here:
   long xNew = TO_INT(xpos * _scale) + _offsetX;
@@ -182,7 +182,7 @@ void Laser::sendto (long xpos, long ypos)
   if (clipLine(oldX,oldY, clipX,clipY)) {
     if (oldX != _oldX || oldY != _oldY) {
       sendtoRaw(oldX, oldY);
-    }
+    }    
     sendtoRaw(clipX, clipY);
   }
   _oldX = xNew;
@@ -238,11 +238,12 @@ void Laser::sendtoRaw (long xNew, long yNew)
     _maxMoveX = xNew;
     _maxMoveY = yNew;
   }
-
-  _x = xNew;
-  _y = yNew;
-  sendToDAC(_x, _y);
-  wait(LASER_END_DELAY);
+  
+  // this was causing crashing?
+  //_x = xNew;
+  //_y = yNew;  
+  sendToDAC(_x, _y);  
+  wait(LASER_END_DELAY);  
 }
 
 void Laser::drawline(long x1, long y1, long x2, long y2)
