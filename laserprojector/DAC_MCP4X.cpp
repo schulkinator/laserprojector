@@ -51,15 +51,15 @@ byte MCP4X::init(byte model, unsigned int vrefA, unsigned int vrefB,
 
 void MCP4X::begin(boolean beginSPI, int8_t sck, int8_t miso, int8_t mosi, int8_t ss) {
 
-	//pinMode(ss_pin, OUTPUT); // Ensure that SS is set to SPI master mode
-	SET_FAST_PINMODE_OUT(ss_pin);
-	//pinMode(LDAC_pin, OUTPUT);
-	SET_FAST_PINMODE_OUT(LDAC_pin);
+	pinMode(ss_pin, OUTPUT); // Ensure that SS is set to SPI master mode
+	//SET_FAST_PINMODE_OUT(ss_pin);
+	pinMode(LDAC_pin, OUTPUT);
+	//SET_FAST_PINMODE_OUT(LDAC_pin);
 
-	//digitalWrite(ss_pin, HIGH); // Unselect the device
-	SET_FAST_DIGITALWRITE_HIGH(ss_pin);
-	//digitalWrite(LDAC_pin, HIGH); // Un-latch the output
-	SET_FAST_DIGITALWRITE_HIGH(LDAC_pin);
+	digitalWrite(ss_pin, HIGH); // Unselect the device
+	//SET_FAST_DIGITALWRITE_HIGH(ss_pin);
+	digitalWrite(LDAC_pin, HIGH); // Un-latch the output
+	//SET_FAST_DIGITALWRITE_HIGH(LDAC_pin);
 
 	if (beginSPI)
 		SPI.begin(sck, miso, mosi, ss);

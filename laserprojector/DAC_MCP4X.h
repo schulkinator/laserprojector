@@ -39,7 +39,7 @@
 //
 // Params
 //
-#define MCP4X_PORT_WRITE 1
+#define MCP4X_PORT_WRITE 0
 #define MCP4X_NO_LDAC			-1
 #ifndef MCP4X_PORT_WRITE
 #define MCP4X_PORT_WRITE		0

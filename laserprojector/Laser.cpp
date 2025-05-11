@@ -206,8 +206,9 @@ void Laser::sendtoRaw (long xNew, long yNew)
   {
     diffx = diffy;     
   }
-  fdiffx = FROM_INT(fdiffx) / diffx;
-  fdiffy = FROM_INT(fdiffy) / diffx;
+  // this code was crashing! prevent division by zero
+  fdiffx = diffx != 0 ? FROM_INT(fdiffx) / diffx : 0;
+  fdiffy = diffx != 0 ? FROM_INT(fdiffy) / diffx : 0;
   // interpolate in FIXPT
   FIXPT tmpx = 0;
   FIXPT tmpy = 0;
@@ -238,10 +239,9 @@ void Laser::sendtoRaw (long xNew, long yNew)
     _maxMoveX = xNew;
     _maxMoveY = yNew;
   }
-  
-  // this was causing crashing?
-  //_x = xNew;
-  //_y = yNew;  
+    
+  _x = xNew;
+  _y = yNew;  
   sendToDAC(_x, _y);  
   wait(LASER_END_DELAY);  
 }

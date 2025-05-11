@@ -14,7 +14,8 @@
 #define LASER_QUALITY 64
 
 // Defines how long the galvos wait for the on/off toggling of the laser pointer (in microseconds), this will depend on your laser pointer.
-#define LASER_TOGGLE_DELAY 500
+//#define LASER_TOGGLE_DELAY 500
+#define LASER_TOGGLE_DELAY 800
 // Defines how long the galvos wait at the end of a line (currently only used for the 3D cube rendering, in microseconds).
 #define LASER_LINE_END_DELAY 200
 // Defines the delay the laser waits after reaching a given position (in microseconds).

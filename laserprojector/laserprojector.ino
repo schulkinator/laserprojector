@@ -44,10 +44,13 @@
 static bool laser_state = false;
 
 #define DAC_CS_PIN 34
-//#define DAC_CLK_PIN 35 // this made the LED come on
-#define DAC_CLK_PIN 36 // trying to fix rebooting
+// this made the LED come on
+//#define DAC_CLK_PIN 35 
+// trying to fix rebooting
+#define DAC_CLK_PIN 36 
 //#define DAC_CLK_PIN 38
 #define DAC_SDI_MOSI_PIN 33
+//#define DAC_SDI_MOSI_PIN 35
 #define DAC_LATCH_PIN 39
 
 
@@ -502,12 +505,12 @@ void loop()
   }
   loop_flashDrive();
   loop_lcd();
-  //whatAbout3D();
+  whatAbout3D();
   //countDown();
   //letterEffect();
   //simpleText();
   //circle();
-  drawArduino3D();
+  //drawArduino3D();
 }
 
 /****************************************************
