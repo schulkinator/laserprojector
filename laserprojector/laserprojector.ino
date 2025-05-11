@@ -506,11 +506,11 @@ void loop()
   loop_flashDrive();
   loop_lcd();
   whatAbout3D();
-  //countDown();
-  //letterEffect();
-  //simpleText();
+  countDown();
+  letterEffect();
+  simpleText();
   //circle();
-  //drawArduino3D();
+  drawArduino3D();
 }
 
 /****************************************************
