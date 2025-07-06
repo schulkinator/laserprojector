@@ -4,6 +4,7 @@ This is a laser projector which uses a single laser diode to project an image on
 It is capable of displaying 20kpps (points per second). Which is fast enough to display simple text and vector based images.
 
 This project was mainly based on this instructables tutorial: https://www.instructables.com/Arduino-Laser-Show-With-Real-Galvos/
+
 *I did not write the majority of the laser control code! This was mainly taken from the above tutorial. There were a number of bugs in that code that I needed to fix for it to work. Some of it was incompatible with ESP32 altogether and would cause it to crash and hard-reboot. A number of places in the code divide by zero for example, which may work on arduino but causes a hard-crash in ESP32.*
 
 This is the finished projector.
