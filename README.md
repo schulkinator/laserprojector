@@ -40,6 +40,8 @@ Bill Of Materials:
 - Small 12v fan.
 - 12v blue power indicator lamp.
 - Electrocookie protoboards.
+- Metal standoffs (M3 compatible).
+- M3 screws and washers of various sizes.
 - 10 inch by 8 inch by 3 inch metal enclosure.
 - 3D printed 35mm x 42mm laser aperture.
 - USB flash drive (for loading graphics).
