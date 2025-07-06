@@ -42,3 +42,4 @@ Bill Of Materials:
 - Electrocookie protoboards.
 - 10 inch by 8 inch by 3 inch metal enclosure.
 - 3D printed 35mm x 42mm laser aperture.
+- USB flash drive (for loading graphics).
