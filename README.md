@@ -14,6 +14,9 @@ This is the finished projector.
 ![image2](https://github.com/user-attachments/assets/6c1e1e22-c128-4746-b07f-c87f8e8039f6)
 ![image3](https://github.com/user-attachments/assets/62696837-5e58-449c-bbf1-c83c73d2a6d6)
 ![image4](https://github.com/user-attachments/assets/a88c629c-8890-41c5-acd7-4fe47d6e0a00)
+![image1 (2)](https://github.com/user-attachments/assets/9880bbd1-43ed-4bda-99fe-a5beb2c02468)
+![image0 (4)](https://github.com/user-attachments/assets/d5d5be0b-eb59-43e4-be1c-2f0af1f2ce84)
+
 ![layout](https://github.com/user-attachments/assets/9cdcb44a-a3f0-472f-a6d1-0f7f6371f9b8)
 
 
