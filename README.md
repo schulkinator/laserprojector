@@ -5,7 +5,7 @@ It is capable of displaying 20kpps (points per second). Which is fast enough to 
 
 This project was mainly based on this instructables tutorial: https://www.instructables.com/Arduino-Laser-Show-With-Real-Galvos/
 
-*I did not write the majority of the laser control code! This was mainly taken from the above tutorial. Many thanks to the author but there were a number of bugs in that code that I needed to fix for it to work. Some of it was incompatible with ESP32 altogether and would cause it to hard-crash and reboot. A number of places in the code divide by zero for example, which may work on arduino but causes ESP32 to crash.*
+*I did not write the majority of the laser control code! This was mainly taken from the above tutorial. Many thanks to the author but there were a number of issues that I needed to fix for it to work. Some of it was incompatible with ESP32 altogether and would cause it to hard-crash and reboot. A number of places in the code divide by zero for example, which may work on arduino but causes ESP32 to crash.*
 
 This is the finished projector.
 
