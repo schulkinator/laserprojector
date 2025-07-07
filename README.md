@@ -1,5 +1,5 @@
 # laserprojector
-Code and schematics for a DIY laser projector device.
+Code and schematics for a DIY esp32-based laser projector device.
 This is a laser projector which uses a single laser diode to project an image on a wall or screen.
 It is capable of displaying 20kpps (points per second). Which is fast enough to display simple text and vector based images.
 
