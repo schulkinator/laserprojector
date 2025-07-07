@@ -5,7 +5,7 @@ It is capable of displaying 20kpps (points per second). Which is fast enough to 
 
 This project was mainly based on this instructables tutorial: https://www.instructables.com/Arduino-Laser-Show-With-Real-Galvos/
 
-*I did not write the majority of the laser control code! This was mainly taken from the above tutorial. There were a number of bugs in that code that I needed to fix for it to work. Some of it was incompatible with ESP32 altogether and would cause it to hard-crash and reboot. A number of places in the code divide by zero for example, which may work on arduino but causes a crash in ESP32.*
+*I did not write the majority of the laser control code! This was mainly taken from the above tutorial. Many thanks to the author but there were a number of bugs in that code that I needed to fix for it to work. Some of it was incompatible with ESP32 altogether and would cause it to hard-crash and reboot. A number of places in the code divide by zero for example, which may work on arduino but causes ESP32 to crash.*
 
 This is the finished projector.
 
@@ -22,7 +22,7 @@ This is the finished projector.
 
 
 Bill Of Materials:
-- heltec esp32 oled “wifi kit 32” v3.  https://www.amazon.com/HiLetgo-Display-Bluetooth-Internet-Development/dp/B07DKD79Y9
+- heltec esp32 oled “wifi kit 32” v3 (main logic board).  https://www.amazon.com/HiLetgo-Display-Bluetooth-Internet-Development/dp/B07DKD79Y9
 - 488nm cyan laser 1mw.  https://www.ebay.com/itm/285647106367
 - LCD Front-Panel Screen PWB51505C-COB (Optrex C-51505NFJ-SLW-AIN)
 - TXS0108E Logic Level Shifter 3.3v 5v High Speed Full Duplex 8 Channel (allows interfacing 3v ESP32 with the 5v LCD)
@@ -32,7 +32,7 @@ Bill Of Materials:
 - CH375B USB disk drive module.
 - 12bit DAC - MCP4822.  https://www.ebay.com/itm/395490637084
 - 2x TL082 opamp chips.
-- 4 10kohm potentiometer knobs.
+- 4x 10kohm potentiometer knobs.
 - assortment of carbon film resistors ranging from 200ohm to 47kohm.
 - electrolytic capacitors for bypass power (can also be ceramic).
 - makerbeam extrusions for structure (for the laser and fan).
@@ -43,5 +43,5 @@ Bill Of Materials:
 - Metal standoffs (M3 compatible).
 - M3 screws and washers of various sizes.
 - 10 inch by 8 inch by 3 inch metal enclosure.
-- 3D printed 35mm x 42mm laser aperture.
+- 3D printed 42mm x 35mm laser aperture.
 - USB flash drive (for loading graphics).
